@@ -114,12 +114,13 @@ function CreateSimpleWebserver() {
                     }
                     // decode message
                     if (jmsg["command"] != null) {
-                        if (jmsg["command"] == "clientRegister") {
-                            if (jmsg["username"] != null && jmsg["password"] != null && jmsg["username"] == obj.defaultKpmuUsername && jmsg["password"] == obj.defaultKpmuPassword) {
-                                resp["token"] = Buffer.from(jmsg["clientId"]).toString('base64')
+                        if (jmsg["command"] == "clientRegister" && jmsg["parameters"] !=null ) {
+                            param = jmsg["parameters"]
+                            if (param["username"] != null && param["password"] != null && param["username"] == obj.defaultKpmuUsername && param["password"] == obj.defaultKpmuPassword) {
+                                resp["token"] = Buffer.from(param["clientId"]).toString('base64')
                                 // Track the connection
-                                obj.kpmuConnections[jmsg["clientId"]] = ws
-                                ws.clientId = jmsg["clientId"]
+                                obj.kpmuConnections[param["clientId"]] = ws
+                                ws.clientId = param["clientId"]
                                 ws.authenticated = true
                                 // debug
                                 console.log("KPMU connections: " + JSON.stringify(Object.keys(obj.kpmuConnections)))
@@ -132,12 +133,13 @@ function CreateSimpleWebserver() {
                     }
                     ws.send(JSON.stringify(resp));
                 } else {
-                    // we only forward response to responder registered in responder array
+                    // we only forward response to oldest responder registered in responder array then remove it from responder
+                    // FIFO
                     if (ws.responder!=null) {
-                        do {
-                            resp = ws.responder.pop()
+                        if (ws.responder.length>0) {
+                            resp = ws.responder.shift()
                             resp.send(JSON.stringify(jmsg))
-                        } while (ws.responder.length>0)
+                        } 
                     }
                 }
             })

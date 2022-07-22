@@ -4,10 +4,12 @@ var ws = new WebSocket('wss://localhost/kpmu', { rejectUnauthorized: false });
 
 var registerMessage = {
     "command": "clientRegister",
-    "username": "kpmu",
-    "password": "kpmu",
-    "clientId": "00DEADBEEF01",
-    "token":""
+    "parameters" : {
+        "username": "kpmu",
+        "password": "kpmu",
+        "clientId": "00DEADBEEF01",
+        "token":""
+    }
 }
 
 ws.on('open', function() {
