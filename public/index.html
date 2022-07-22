@@ -1,0 +1,64 @@
+<html>
+    <head>
+        <title>Index Page</title>
+        <script type="text/javascript">
+            function listConnection() {
+                var xhttp = new XMLHttpRequest();
+                xhttp.onreadystatechange = function () {
+                    if (this.readyState == 4 && this.status == 200) {
+                        document.getElementById("log").innerHTML = this.responseText;
+                        try {
+                            reply = JSON.parse(this.responseText)
+                            if (reply["response"]!=null && reply["response"]=="listConnections" && reply["statusCode"]!=null && reply["statusCode"] == 0) {                                
+                                if (reply["data"]!=null && Array.isArray(reply["data"])) {
+                                    nodes = document.getElementById("node")
+                                    nodes.innerHTML = ""
+                                    reply["data"].forEach(element => {
+                                        var opt = document.createElement('option')
+                                        opt.value = element
+                                        opt.innerHTML = element
+                                        nodes.appendChild(opt)
+                                    });
+                                }
+                            }
+                        } catch (e) {
+                            console.log(e)                            
+                        }
+                    }
+                }
+                xhttp.open("POST","/api",true);
+                xhttp.setRequestHeader("Content-type", "application/json");
+                xhttp.send("{ \"request\" : \"listConnections\" }");
+            }
+
+            function SendCommand() {
+                var xhttp = new XMLHttpRequest();
+                xhttp.onreadystatechange = function () {
+                    if (this.readyState == 4 && this.status == 200) {
+                        document.getElementById("log").innerHTML = this.responseText;
+                    }
+                }
+                xhttp.open("POST","/api",true);
+                xhttp.setRequestHeader("Content-type", "application/json");
+                msg = {
+                    request: "sendCommand",
+                }
+                msg["node"]=document.getElementById("node").value
+                msg["message"] = JSON.parse(document.getElementById("cmd").value)
+                xhttp.send(JSON.stringify(msg));
+            }
+        </script>
+    </head>
+    <body>
+        <h3>Agent connection testing</h3>
+        <button type="button" onclick="listConnection()">List Connection</button>
+        <br/>
+        Node: <select id="node">
+        </select><br/>
+        Command:<br/>
+        <textarea cols="100" rows="6" id="cmd"></textarea><br/>
+        <button type="button" onclick="SendCommand()">SendCommand</button><br/>
+        Log:<br/>
+        <textarea cols="150" rows="10" id="log"></textarea>
+    </body>
+</html>

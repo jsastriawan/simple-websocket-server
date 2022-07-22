@@ -1,0 +1,5 @@
+node_modules
+private/config.json
+private/*.cer
+private/*.crt
+private/*.key

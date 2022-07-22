@@ -1,0 +1,16 @@
+{
+  "name": "simple-tunnel-server",
+  "version": "0.0.1",
+  "description": "Simple Websocket NodeJS-based tunnel server",
+  "main": "main.js",
+  "scripts": {
+    "start": "node main.js"
+  },
+  "dependencies": {
+    "express": "^4.17.1",
+    "express-ws": "4.0.0",
+    "node-forge": "0.10.0"
+  },
+  "author": "Joko Sastriawan <joko.sastriawan@gmail.com>",
+  "license": "Apache-2.0"
+}
