@@ -5,11 +5,11 @@ Request:
 
 ```json
 {
-	"command": "kmsUSBHardReset",
+    "command": "kmsUSBHardReset",
     "tid": "1234567",
-	"parameters": {
-		"portchain": "0"
-	}
+    "parameters": {
+        "portchain": "0"
+    }
 }
 ```
 
@@ -60,6 +60,7 @@ Request:
 ```json
 {
     "command": "kmsSMBUSPowerControl",
+    "tid": "12345",
     "parameters": {
         "state": "0"
     }
@@ -67,9 +68,11 @@ Request:
 ```
 
 Reply:
-```
+
+```json
 {
     "statusCode": "0",
+    "tid": "12345",
     "response": {
         "errorMessage": ""
     }
