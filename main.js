@@ -68,7 +68,10 @@ function CreateSimpleWebserver() {
         }
         certificates.web.cert = webCertificate;
         certificates.web.key = webPrivateKey;
-
+        
+        if (!obj.fs.existsSync('public/root.crt')) {
+            obj.fs.writeFileSync('public/root.crt', rootCertificate);            
+        }
         var options = {
             key: obj.fs.readFileSync('private/web-cert-private.key'),
             cert: obj.fs.readFileSync('private/web-cert-public.crt'),

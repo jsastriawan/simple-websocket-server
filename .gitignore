@@ -3,3 +3,4 @@ private/config.json
 private/*.cer
 private/*.crt
 private/*.key
+public/*.crt

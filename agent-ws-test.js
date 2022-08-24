@@ -22,6 +22,7 @@ ws.on('message', function(msg) {
         jmsg = JSON.parse(msg)
         if (jmsg["command"]!=null) {
             reply = {
+                tid: jmsg.tid,
                 statusCode: 0                
             }
             ws.send(JSON.stringify(reply))

@@ -3,21 +3,24 @@
 ## USB HardReset
 Request:
 
-```
+```json
 {
-	command: “kmsUSBHardReset”,
-	parameters: {
-		portchain: “0”
+	"command": "kmsUSBHardReset",
+    "tid": "1234567",
+	"parameters": {
+		"portchain": "0"
 	}
 }
 ```
 
 Reply:
-```
+
+```json
 {
-    “statusCode”: 0,
-    “response”: {
-        “errorMessage”: ””
+    "statusCode": "0",
+    "tid": "1234567",
+    "response": {
+        "errorMessage": ""
     }
 }
 ```
@@ -31,6 +34,7 @@ Request:
 ```json
 {
     "command": "kmsGPIOPowerControl",
+    "tid": "1234568",
     "parameters": {
         "state": "0"
     }
@@ -41,6 +45,7 @@ Reply:
 ```json
 {
     "statusCode": "0",
+    "tid": "1234568",
     "response": {
         "errorMessage": ""
     }
