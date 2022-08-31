@@ -49,10 +49,10 @@ ws.on('open', function() {
     }
     if (verifiedCert && !testVerify) {
         console.log("Send clientRegister message")
-        //reset verifiedCert
-        verifiedCert=false;
         ws.send(JSON.stringify(registerMessage));
     } else {
+        //reset verifiedCert status
+        verifiedCert = false;
         // perform secondary verification
         if (testChallenge) {            
             serverCertChallenge["parameters"]["token"] = encutil.encryptStringWithRsaPublicKeyString(challenge_message,knownCert.raw.toString("base64"));
