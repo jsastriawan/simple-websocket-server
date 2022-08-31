@@ -151,12 +151,26 @@ function CreateSimpleWebserver() {
                                     resp["parameters"]["token"] = obj.encutil.encryptStringWithRsaPublicKeyString( serverCertStr+":"+token_nonce[1], clientCert)
                                 }
                             }                        
+                        } else if (jmsg["command"]== "serverCertChallenge" && jmsg["parameters"] !=null && jmsg["parameters"]["token"] !=null) {
+                            //simpler challenge to return sha256 hash of the secret message from NIC
+                            //console.log("Token:",jmsg["parameters"]["token"]);
+                            var token = jmsg["parameters"]["token"].split(" ");
+                            //console.log("Chunk:", token.length);
+                            var decrypted_message = "";
+                            // decrypt each chunk and append
+                            for (i=0;i<token.length;i++) {
+                                decrypted_message += obj.encutil.decryptStringWithRsaPrivateKey(token[i],"private/web-cert-private.key")
+                            }
+                            //console.log("Decrypted message:", decrypted_message)
+                            resp["response"] = "serverCertResponse"
+                            resp["parameters"] = {}
+                            resp["parameters"]["token"] = obj.crypto.createHash("sha256").update(decrypted_message).digest('base64');
                         } else {
                             resp["code"] = -1
                         }                    
-                    } else {
+                    }  else {
                         resp["code"] = -1
-                    }
+                    }                    
                     ws.send(JSON.stringify(resp));
                 } else {
                     // we only forward response to oldest responder registered in responder array then remove it from responder
