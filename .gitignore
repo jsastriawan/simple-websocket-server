@@ -4,3 +4,6 @@ private/*.cer
 private/*.crt
 private/*.key
 public/*.crt
+client_private/*.cer
+client_private/*.crt
+client_private/*.key

@@ -12,4 +12,11 @@ $ npm install
 $ node main.js
 ```
 
+Run only once to generate client certificate
+```
+$ node genclientcert.js
+```
 Run an agent to connect to this machine.
+```
+$ node agent-ws-test.js
+```

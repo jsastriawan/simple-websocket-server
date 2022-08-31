@@ -11,6 +11,8 @@ const { json } = require('express');
 function CreateSimpleWebserver() {
     var obj = {}
     obj.fs = require('fs');
+    obj.crypto = require('crypto');
+    obj.encutil = require('./encryptionutil');
     obj.express = require('express');    
     obj.app = obj.express();    
     obj.https = require('https');
@@ -128,9 +130,30 @@ function CreateSimpleWebserver() {
                                 // debug
                                 console.log("KPMU connections: " + JSON.stringify(Object.keys(obj.kpmuConnections)))
                             }
+                        } else if (jmsg["command"]== "serverCertRequest" && jmsg["parameters"] !=null && jmsg["parameters"]["token"] !=null) {
+                            //console.log("Token:",jmsg["parameters"]["token"]);
+                            var token = jmsg["parameters"]["token"].split(" ");
+                            //console.log("Chunk:", token.length);
+                            var decrypted_message = "";
+                            // decrypt each chunk and append
+                            for (i=0;i<token.length;i++) {
+                                decrypted_message += obj.encutil.decryptStringWithRsaPrivateKey(token[i],"private/web-cert-private.key")
+                            }
+                            //console.log("Decrypted message:", decrypted_message)
+                            var token_nonce = decrypted_message.split(":")
+                            resp["response"] = "serverCertResponse"
+                            if (token_nonce.length == 2) {
+                                clientCert = token_nonce[0]
+                                resp["parameters"] = {}
+                                if (clientCert!=null) {
+                                    // could be simpler by stripping string but this is also to validate the cert
+                                    serverCertStr = new obj.crypto.X509Certificate(obj.fs.readFileSync('private/web-cert-public.crt')).raw.toString('base64');
+                                    resp["parameters"]["token"] = obj.encutil.encryptStringWithRsaPublicKeyString( serverCertStr+":"+token_nonce[1], clientCert)
+                                }
+                            }                        
                         } else {
                             resp["code"] = -1
-                        }
+                        }                    
                     } else {
                         resp["code"] = -1
                     }
