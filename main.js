@@ -14,7 +14,8 @@ function CreateSimpleWebserver() {
     obj.crypto = require('crypto');
     obj.encutil = require('./encryptionutil');
     obj.express = require('express');    
-    obj.app = obj.express();    
+    obj.app = obj.express();
+    obj.http = require('http');    
     obj.https = require('https');
     obj.kpmuConnections = {};
     obj.defaultKpmuUsername = "kpmu";
@@ -229,7 +230,8 @@ function CreateSimpleWebserver() {
         
         // create static folder
         obj.app.use(obj.express.static(__dirname+'/public'));
-
+        obj.http.createServer(obj.app).listen(80);
+        console.log("HTTP server is listening at port 80");
         server.listen(443);
         console.log("HTTPS server is listening at port 443");
         console.log("Use Ctrl+C to terminate web server");
