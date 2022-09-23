@@ -45,7 +45,7 @@ function CreateSimpleWebserver() {
             rootCertAndKey = { cert: certoperation.pki.certificateFromPem(rootCertificate), key: certoperation.pki.privateKeyFromPem(rootPrivateKey) }
         } else {
             console.log('Generating Root certificate...');
-            rootCertAndKey = certoperation.GenerateRootCertificate(true, 'WebsiteRoot', null, null, true);
+            rootCertAndKey = certoperation.GenerateRootCertificate(true, 'WebsiteRoot', null, null, false);
             rootCertificate = certoperation.pki.certificateToPem(rootCertAndKey.cert);
             rootPrivateKey = certoperation.pki.privateKeyToPem(rootCertAndKey.key);
             obj.fs.writeFileSync('private/root-cert-public.crt', rootCertificate);
