@@ -78,8 +78,9 @@ function CreateSimpleWebserver() {
         var options = {
             key: obj.fs.readFileSync('private/web-cert-private.key'),
             cert: obj.fs.readFileSync('private/web-cert-public.crt'),
-            ciphers: "HIGH:TLS_AES_256_GCM_SHA384:TLS_AES_128_GCM_SHA256:TLS_AES_128_CCM_8_SHA256:TLS_AES_128_CCM_SHA256:TLS_CHACHA20_POLY1305_SHA256", 
-            secureOptions: constants.SSL_OP_NO_SSLv2 | constants.SSL_OP_NO_SSLv3 | constants.SSL_OP_NO_COMPRESSION | constants.SSL_OP_C | constants.SSL_OP_NO_TLSv1 | constants.SSL_OP_NO_TLSv1_1 
+            ciphers: "HIGH:TLS_RSA_WITH_AES_128_CBC_SHA:TLS_AES_256_GCM_SHA384:TLS_AES_128_GCM_SHA256:TLS_AES_128_CCM_8_SHA256:TLS_AES_128_CCM_SHA256:TLS_CHACHA20_POLY1305_SHA256", 
+            secureOptions: constants.SSL_OP_NO_SSLv2 | constants.SSL_OP_NO_SSLv3 | constants.SSL_OP_NO_COMPRESSION | constants.SSL_OP_C | constants.SSL_OP_NO_TLSv1 | constants.SSL_OP_NO_TLSv1_1,
+            maxVersion: "TLSv1.2"
         };
         var server = obj.https.createServer(options,obj.app);
         obj.expressWs = require('express-ws')(obj.app, server);
