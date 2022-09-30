@@ -245,7 +245,8 @@ module.exports.CertificateOperations = function (parent) {
     // Return the SHA384 hash of the certificate public key
     obj.getPublicKeyHash = function (cert) {
         var publickey = obj.pki.certificateFromPem(cert).publicKey;
-        return obj.pki.getPublicKeyFingerprint(publickey, { encoding: 'hex', md: obj.forge.md.sha384.create() });
+        //return obj.pki.getPublicKeyFingerprint(publickey, { encoding: 'hex', md: obj.forge.md.sha384.create() });
+        return obj.pki.getPublicKeyFingerprint(publickey, { encoding: 'hex', md: obj.forge.md.sha256.create() });
     };
 
     // Return the SHA384 hash of the certificate, return hex
@@ -266,14 +267,16 @@ module.exports.CertificateOperations = function (parent) {
     // Return the SHA384 hash of the certificate, return hex
     obj.getCertHash = function (cert) {
         try {
-            var md = obj.forge.md.sha384.create();
+            //var md = obj.forge.md.sha384.create();
+            var md = obj.forge.md.sha256.create();
             md.update(obj.forge.asn1.toDer(obj.pki.certificateToAsn1(obj.pki.certificateFromPem(cert))).getBytes());
             return md.digest().toHex();
         } catch (ex) {
             // If this is not an RSA certificate, hash the raw PKCS7 out of the PEM file
             var x1 = cert.indexOf('-----BEGIN CERTIFICATE-----'), x2 = cert.indexOf('-----END CERTIFICATE-----');
             if ((x1 >= 0) && (x2 > x1)) {
-                return obj.crypto.createHash('sha384').update(Buffer.from(cert.substring(x1 + 27, x2), 'base64')).digest('hex');
+                //return obj.crypto.createHash('sha384').update(Buffer.from(cert.substring(x1 + 27, x2), 'base64')).digest('hex');
+                return obj.crypto.createHash('sha256').update(Buffer.from(cert.substring(x1 + 27, x2), 'base64')).digest('hex');
             } else { console.log("ERROR: Unable to decode certificate."); return null; }
         }
     };
@@ -281,21 +284,24 @@ module.exports.CertificateOperations = function (parent) {
     // Return the SHA384 hash of the certificate public key
     obj.getPublicKeyHashBinary = function (cert) {
         var publickey = obj.pki.certificateFromPem(cert).publicKey;
-        return obj.pki.getPublicKeyFingerprint(publickey, { encoding: 'binary', md: obj.forge.md.sha384.create() });
+        //return obj.pki.getPublicKeyFingerprint(publickey, { encoding: 'binary', md: obj.forge.md.sha384.create() });
+        return obj.pki.getPublicKeyFingerprint(publickey, { encoding: 'binary', md: obj.forge.md.sha256.create() });
     };
 
     // Return the SHA384 hash of the certificate, return binary
     obj.getCertHashBinary = function (cert) {
         try {
             // If this is a RSA certificate, we can use Forge to hash the ASN1
-            var md = obj.forge.md.sha384.create();
+            //var md = obj.forge.md.sha384.create();
+            var md = obj.forge.md.sha256.create();
             md.update(obj.forge.asn1.toDer(obj.pki.certificateToAsn1(obj.pki.certificateFromPem(cert))).getBytes());
             return md.digest().getBytes();
         } catch (ex) {
             // If this is not an RSA certificate, hash the raw PKCS7 out of the PEM file
             var x1 = cert.indexOf('-----BEGIN CERTIFICATE-----'), x2 = cert.indexOf('-----END CERTIFICATE-----');
             if ((x1 >= 0) && (x2 > x1)) {
-                return obj.crypto.createHash('sha384').update(Buffer.from(cert.substring(x1 + 27, x2), 'base64')).digest('binary');
+                //return obj.crypto.createHash('sha384').update(Buffer.from(cert.substring(x1 + 27, x2), 'base64')).digest('binary');
+                return obj.crypto.createHash('sha256').update(Buffer.from(cert.substring(x1 + 27, x2), 'base64')).digest('binary');
             } else { console.log("ERROR: Unable to decode certificate."); return null; }
         }
     };
@@ -317,7 +323,8 @@ module.exports.CertificateOperations = function (parent) {
         // Create a root certificate
         //cert.setExtensions([{ name: 'basicConstraints', cA: true }, { name: 'nsCertType', sslCA: true, emailCA: true, objCA: true }, { name: 'subjectKeyIdentifier' }]);
         cert.setExtensions([{ name: 'basicConstraints', cA: true }, { name: 'subjectKeyIdentifier' }, { name: 'keyUsage', keyCertSign: true }]);
-        cert.sign(keys.privateKey, obj.forge.md.sha384.create());
+        //cert.sign(keys.privateKey, obj.forge.md.sha384.create());
+        cert.sign(keys.privateKey, obj.forge.md.sha256.create());
 
         return { cert: cert, key: keys.privateKey };
     };
@@ -367,7 +374,8 @@ module.exports.CertificateOperations = function (parent) {
         }
 
         cert.setExtensions(extensions);
-        cert.sign(rootcert.key, obj.forge.md.sha384.create());
+        //cert.sign(rootcert.key, obj.forge.md.sha384.create());
+        cert.sign(rootcert.key, obj.forge.md.sha256.create());
 
         return { cert: cert, key: keys.privateKey };
     };
@@ -430,7 +438,8 @@ module.exports.CertificateOperations = function (parent) {
                 obj.fs.writeFileSync(parent.getConfigFilePath('root-cert-public-backup.crt'), rootCertificate);
                 xroot.setExtensions([{ name: 'basicConstraints', cA: true }, { name: 'subjectKeyIdentifier' }, { name: 'keyUsage', keyCertSign: true }]);
                 var xrootPrivateKey = obj.pki.privateKeyFromPem(rootPrivateKey);
-                xroot.sign(xrootPrivateKey, obj.forge.md.sha384.create());
+                //xroot.sign(xrootPrivateKey, obj.forge.md.sha384.create());
+                xroot.sign(xrootPrivateKey, obj.forge.md.sha256.create());
                 r.root.cert = obj.pki.certificateToPem(xroot);
                 try { obj.fs.writeFileSync(parent.getConfigFilePath('root-cert-public.crt'), r.root.cert); } catch (ex) { }
             }
@@ -843,7 +852,8 @@ module.exports.CertificateOperations = function (parent) {
         if (acceleratorTotalCount <= 1) {
             // No accelerators available
             if (typeof privatekey == 'number') { privatekey = obj.acceleratorCertStore[privatekey].key; }
-            const sign = obj.crypto.createSign('SHA384');
+            //const sign = obj.crypto.createSign('SHA384');
+            const sign = obj.crypto.createSign('SHA256');
             sign.end(Buffer.from(data, 'binary'));
             try { func(tag, sign.sign(privatekey).toString('binary')); } catch (ex) { acceleratorMessageException++; acceleratorMessageLastException = ex; }
         } else {
